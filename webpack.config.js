@@ -112,7 +112,7 @@ module.exports = {
 		contentBase: __dirname + "\\public",
 		proxy: [{
 			path: "/api/*",
-			target: "http://nd.ndv.e42.guru",
+			target: "http://localhost",
 			secure: false
 		}]
 	}
