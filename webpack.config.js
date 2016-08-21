@@ -10,9 +10,9 @@ module.exports = {
 
 	entry: {
 		home: "./js/home",
-		main: "./react/entrys/main",
 		common: ["./js/helpers", "expose?$!expose?jQuery!jquery"],
-		react: ["expose?React!react", "expose?ReactDOM!react-dom"]
+		react_main: "./react/entrys/main",
+		ang_main: "./angular/entrys/index",
 	},
 
 	output: {
@@ -28,22 +28,27 @@ module.exports = {
 	devtool: NODE_ENV == "development" ? "source-map" : null,
 
 	plugins: [
-		/*{
+		{
 			apply: compiler => {
 				rimraf.sync(compiler.options.output.path);
 			}
-		},*/
+		},
 		new webpack.NoErrorsPlugin(),
 		new webpack.DefinePlugin({
 			NODE_ENV:JSON.stringify(NODE_ENV)
 		}),
 		new webpack.optimize.CommonsChunkPlugin({
-			name: "common"
+			name: "common",
+			chunks: ["home"]
 		}),
 		new webpack.optimize.CommonsChunkPlugin({
 			name: "react",
-			chunks: ["main"]
+			chunks: ["react_main"]
 		}),
+		/*new webpack.optimize.CommonsChunkPlugin({
+			name: "angular",
+			chunks: ["ang_main"]
+		}),*/
 		new ExtractTextPlugin('../css/[name].css', {allChunks: true, disable: !(NODE_ENV == "development") })
 	],
 
@@ -56,7 +61,7 @@ module.exports = {
 			layout: 	__dirname + "/src/react/layouts"
 		},
 		modulesDirectories: ["node_modules"],
-		extensions: ["", ".js", ".es6", ".jsx"]
+		extensions: ["", ".js", ".es6", ".jsx", ".ts", ".json"]
 	},
 
 	module: {
@@ -94,6 +99,15 @@ module.exports = {
 				}
 			},
 			{
+				test: /\.ts$/,
+				loaders: ['awesome-typescript', 'angular2-template'],
+				exclude: [/\.(spec|e2e)\.ts$/]
+			},
+			{
+				test: /\.json$/,
+				loader: 'json-loader'
+			},
+			{
 				test   : /\.css$/,
 				exclude: /(node_modules|bower_components)/,
 				loader: 'style!css!resolve-url'
@@ -104,17 +118,6 @@ module.exports = {
 				loader: ExtractTextPlugin.extract('style', 'css!resolve-url!sass?sourceMap')
 			}
 		]
-	},
-
-	devServer: {
-		host: "localhost",
-		port: 8080,
-		contentBase: __dirname + "\\public",
-		proxy: [{
-			path: "/api/*",
-			target: "http://localhost",
-			secure: false
-		}]
 	}
 };
 
@@ -130,3 +133,30 @@ if (NODE_ENV == "production") {
 		})
 	);
 }
+
+if (NODE_ENV == "development") {
+	console.log("include dev server");
+	module.exports.devServer = {
+		host: "localhost",
+		port: 8080,
+		contentBase: __dirname + "\\public",
+		proxy: [{
+			path: "/react",
+			target: "http://localhost:8080",
+			secure: false,
+			rewrite: function(req) {
+				if (req.url == "/react")
+					req.url = "/react.html";
+			}
+		},{
+			path: "/angular",
+			target: "http://localhost:8080",
+			secure: false,
+			rewrite: function(req) {
+				if (req.url == "/angular")
+					req.url = "angular.html";
+			}
+		}],
+	};
+}
+

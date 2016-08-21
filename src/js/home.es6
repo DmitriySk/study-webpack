@@ -6,8 +6,8 @@ heplers();
 $('#root').height(200).css("background", "#dee");
 $('#root2').height(200).css("background", "#edd");
 
-/*$("#root").on('click', () => {
-	console.log('click root2');
+$("#root").on('click', () => {
+	console.log('click root');
 
 	require.ensure(["./login"], function(require) {
 		let login = require("./login");
@@ -22,7 +22,7 @@ $("#root2").on('click', () => {
 		let logout = require("./logout");
 		logout();
 	});
-});*/
+});
 
 $("#login").on('click', () => {
 	$.post("/api/rm/newapp/login", {
