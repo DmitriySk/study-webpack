@@ -8,7 +8,13 @@ import {TodoService} from "./todo-service";
 		
 		<ul>
 			<li *ngFor="let todo of todoService.todos">
-				{{todo}}
+			
+				<span [hidden]="todo.status == 'completed'">{{todo.title}}</span>
+				
+				<span [contentEditable]="todo.status == 'completed'">{{todo.status}}</span>
+				
+				<button (click)="todo.toggle()">Toggle</button>
+				
 			</li>
 		</ul>
 	</div>`
